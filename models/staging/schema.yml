@@ -1,0 +1,172 @@
+
+version: 2
+
+models:
+  - name: stg_yellow_tripdata
+    description: A Staging table containing yellow taxi trip data coming from nyc.gov website and loaded daily.
+    tests:
+    - dbt_expectations.expect_table_column_count_to_be_between:
+        min_value: 19
+        max_value: 19
+    - dbt_expectations.expect_table_columns_to_contain_set:
+        column_list: ['vendor_id', 'pickup_datetime', 'dropoff_datetime', 'passenger_count', 'trip_distance_miles', 'pickup_location_id', 'dropoff_location_id',
+        'rate_code_id', 'store_and_fwd_flag', 'payment_type_id', 'fare_amount', 'extra_charges_amount', 'mta_tax_amount', 'improvement_surcharge_amount',
+        'tip_amount', 'tolls_amount', 'total_amount', 'congestion_surcharge_amount', 'airport_fee_amount']
+    columns:
+      - name: vendor_id
+        description: >
+          A code indicating the TPEP provider that provided the record.
+
+          1= Creative Mobile Technologies, LLC
+          2= VeriFone Inc.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2]
+              quote: false
+      - name: pickup_datetime
+        description: The date and time when the meter was engaged.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: datetime
+      - name: dropoff_datetime
+        description: The date and time when the meter was disengaged.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: datetime
+      - name: passenger_count
+        description: The number of passengers in the vehicle. This is a driver-entered value
+        tests:
+          - not_null
+          - is_positive
+      - name: trip_distance_miles
+        description: The elapsed trip distance in miles reported by the taximeter.
+        tests:
+          - not_null
+          - is_positive
+      - name: pickup_location_id
+        description: TLC Taxi Zone in which the taximeter was engaged.
+        tests:
+          - not_null
+          - is_positive
+      - name: dropoff_location_id
+        description: TLC Taxi Zone in which the taximeter was disengaged.
+        tests:
+          - not_null
+          - is_positive
+      - name: rate_code_id
+        description: >
+          The final rate code in effect at the end of the trip.
+
+          1= Standard rate
+          2=JFK
+          3=Newark
+          4=Nassau or Westchester
+          5=Negotiated fare
+          6=Group ride
+          99=Unknown [needs to be investigated]
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6]
+              quote: false
+      - name: store_and_fwd_flag
+        description: >
+          This flag indicates whether the trip record was held in vehicle memory before sending to the vendor,
+          aka “store and forward,” because the vehicle did not have a connection to the server
+
+          Y= store and forward trip
+          N= not a store and forward trip'
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Y', 'N']
+      - name: payment_type_id
+        description: >
+          A numeric code signifying how the passenger paid for the trip.
+
+          1= Credit card
+          2= Cash
+          3= No charge
+          4= Dispute
+          5= Unknown
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+              quote: false
+      - name: fare_amount
+        description: The time-and-distance fare calculated by the meter.
+        tests:
+          - not_null
+          - is_positive
+      - name: extra_charges_amount
+        description: Miscellaneous extras and surcharges. Currently, this only includes the $0.50 and $1 rush hour and overnight charges.
+        tests:
+          - not_null
+          - is_positive
+      - name: mta_tax_amount
+        description: $0.50 MTA tax that is automatically triggered based on the metered rate in use.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0.5]
+              quote: false
+      - name: improvement_surcharge_amount
+        description: $0.30 improvement surcharge assessed trips at the flag drop. The improvement surcharge began being levied in 2015.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0.3]
+              quote: false
+              config:
+                severity: error
+                error_if: ">1000"
+                warn_if: ">=1"
+      - name: tip_amount
+        description: Tip amount – This field is automatically populated for credit card tips. Cash tips are not included.
+        tests:
+          - not_null
+          - is_positive
+      - name: tolls_amount
+        description: Total amount of all tolls paid in trip.
+        tests:
+          - not_null
+          - is_positive
+      - name: total_amount
+        description: The total amount charged to passengers. Does not include cash tips.
+        tests:
+          - not_null
+          - is_positive
+      - name: congestion_surcharge_amount
+        description: Total amount collected in trip for NYS congestion surcharge.
+        tests:
+          - not_null
+          - is_positive
+      - name: airport_fee_amount
+        description: $1.25 for pick up only at LaGuardia and John F. Kennedy Airports.
+        tests:
+          - is_positive
+
+  - name: stg_taxi_zone_lookup
+    description: A Staging table taxi zones.
+    tests:
+    - dbt_expectations.expect_table_column_count_to_be_between:
+        min_value: 4
+        max_value: 4
+    - dbt_expectations.expect_table_columns_to_contain_set:
+        column_list: ['location_id', 'service_zone', 'zone', 'borough']
+    columns:
+      - name: location_id
+        description: Location ID of taxi zone.
+        tests:
+          - not_null
+          - unique
+      - name: service_zone
+        description: Service zone (ex. Boro Zone) of taxi zone.
+      - name: zone
+        description: Zone (ex. Bronxdale) of taxi zone.
+      - name: borough
+        description: Borough (ex. Bronx) of taxi zone.

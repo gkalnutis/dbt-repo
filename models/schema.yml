@@ -1,0 +1,8 @@
+
+version: 2
+
+sources:
+  - name: Airbyte
+    tables:
+      - name: _airbyte_raw_yellow_tripdata
+      - name: _airbyte_raw_taxi_zone_lookup
