@@ -1,0 +1,15 @@
+
+version: 2
+
+models:
+  - name: yellow_tripdata_enriched
+    description: A Staging table containing yellow taxi trip data coming from nyc.gov website and loaded daily.
+    tests:
+    - dbt_expectations.expect_table_column_count_to_be_between:
+        min_value: 23
+        max_value: 23
+    - dbt_expectations.expect_table_columns_to_contain_set:
+        column_list: ['vendor_name', 'pickup_datetime', 'dropoff_datetime', 'passenger_count', 'trip_distance_miles', 'pickup_location_service_zone',
+        'pickup_location_zone', 'pickup_location_borough', 'dropoff_location_service_zone', 'dropoff_location_zone', 'dropoff_location_borough',
+        'rate_type', 'is_store_forward_trip', 'payment_type', 'fare_amount', 'extra_charges_amount', 'mta_tax_amount', 'improvement_surcharge_amount',
+        'tip_amount', 'tolls_amount', 'total_amount', 'congestion_surcharge_amount', 'airport_fee_amount']
