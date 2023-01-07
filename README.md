@@ -106,8 +106,45 @@ dbt configuration resides in your user directory called, folder called `.dbt`
 You will need to edit `profiles.yml` file to link it to your BigQuery project. Please see example below:
 ![Alt text](/screenshots/profiles_configuration.png?raw=true "dbt profiles.yml Configuration")
 
-folder `macros` contains various reusable macros. Internal folder `udf` contains user defined function definitions. Function macros are called in `macros/create_udfs.sql` file, which is executed before running dbt. This is why when defining custom function, you must use `CREATE OR REPLACE FUNCTION...` or `CREATE FUNCTION ... IF NOT EXISTS`.
+#### Clone dbt GitHub project
 
-folder `models` contains model definitions. Internal folder `staging` contains tables that parse and structurize raw data, coming mostly from `bi_airbyte` dataset. Internal folder `marts` contain finalized models.
+Once dbt is setup clone GitHub project by running following command, example below:
+`git clone https://github.com/gkalnutis/dbt-repo.git`
 
-folder `tests` contains custom dbt tests. More info: [link](https://docs.getdbt.com/docs/building-a-dbt-project/tests#singular-tests)
+Make sure that you have created a Personal Access token on GitHub in order to access your directory. Instructions can be found here [link](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+
+#### dbt Folder Structure
+
+Folder `models` contains model definitions.
+Internal folder `staging` contains tables that parse and structurize raw data, coming from `Airbyte` dataset.
+Internal folder `marts` contain modeled data tables.
+Folder `tests` contains custom dbt tests. More info: [link](https://docs.getdbt.com/docs/building-a-dbt-project/tests#singular-tests)
+Table documentation and testing is handled utilising `schema.yml` files in each folder.
+documentation can be generated locally by running following code:
+```
+dbt docs generate
+dbt docs serve
+```
+Alternatively full dbt documentation for this particular project can be found here: [link](https://incredible-chaja-4859e8.netlify.app/#!/overview/dbt_kevin)
+
+### Initial Data Exploration
+
+Some basic tests were implemented on staging data and below is the list of data discrepancies found:
+1. `improvement_surcharge_amount` - even though only 0.3$ value is possible there are cases when this value is negative.
+2. `mta_tax_amount` - even though only 0.3$ value is possible there are cases when this value is negative.
+3. `vendor_id` - even though only 1 or 2 are possible values, there are cases where vendor_id is 5.
+4. `congestion_surcharge_amount` - there are cases where this value is negative (~16k rows).
+5. `extra_charges_amount` - there are cases where this value is negative (~10k rows).
+6. `fare_amount` - there are cases where this value is negative (~20k rows).
+7. `tip_amount` - there are cases where this value is negative (~200 rows).
+8. `tolls_amount` - there are cases where this value is negative (~500 rows).
+9. `total_amount` - there are cases where this value is negative (~21k rows).
+10. `trip_distance_miles` - there are cases where this value is negative (~3k rows).
+11. `congestion_surcharge_amount` - there are cases where this value is null (51k rows).
+12. `passenger_count` - there are cases where this value is null (51k rows).
+13. `rate_code_id` - there are cases where this value is null (51k rows).
+14. `store_and_fwd_flag` - there are cases where this value is null (51k rows).
+
+### Physical ERD Diagram
+
+It can be found in dbt documentation website. Also please see screenshot below:
