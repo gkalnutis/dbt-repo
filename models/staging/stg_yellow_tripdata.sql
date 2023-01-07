@@ -24,4 +24,3 @@ select
   cast(json_value(_airbyte_data, '$.airport_fee') as numeric) as airport_fee_amount
 from
   {{source('Airbyte', '_airbyte_raw_yellow_tripdata')}}
-limit 1000
