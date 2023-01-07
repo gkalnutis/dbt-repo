@@ -145,6 +145,8 @@ Some basic tests were implemented on staging data and below is the list of data 
 13. `rate_code_id` - there are cases where this value is null (51k rows).
 14. `store_and_fwd_flag` - there are cases where this value is null (51k rows).
 
+These initial findings would be used to define more advanced tests (ex. using dbt-expectations package) and calculate % of wrong data for each column and providing warnings and errors for different thresholds.
+
 ### Physical ERD Diagram
 
 It can be found in dbt documentation website. Also please see screenshot below:
