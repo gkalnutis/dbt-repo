@@ -125,7 +125,7 @@ documentation can be generated locally by running following code:
 dbt docs generate
 dbt docs serve
 ```
-Alternatively full dbt documentation for this particular project can be found here: [link](https://incredible-chaja-4859e8.netlify.app/#!/overview/dbt_kevin)
+Alternatively full dbt documentation for this particular project can be found here: [link](https://luminous-rugelach-9a4500.netlify.app/#!/model/model.dbt_kevin.stg_yellow_tripdata)
 
 ### Initial Data Exploration
 
@@ -148,3 +148,4 @@ Some basic tests were implemented on staging data and below is the list of data 
 ### Physical ERD Diagram
 
 It can be found in dbt documentation website. Also please see screenshot below:
+![Alt text](/screenshots/erd_diagram.png?raw=true "ERD Diagram")
